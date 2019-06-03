@@ -1,13 +1,14 @@
 name: juju_metronome
 description: Metronome by juju
+version: 1.1.0
 
 dependencies:
   flutter:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
-  intl: 0.15.7
-  intl_translation: 0.17.2
+  intl: ^0.15.8
+  intl_translation: ^0.17.5
   cupertino_icons: ^0.1.2
   path_provider: ^0.4.1
   audioplayers: ^0.7.4
@@ -19,7 +20,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  test: ^1.5.1
+  test: ^1.6.1
 
 flutter:
   uses-material-design: true

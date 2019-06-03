@@ -15,14 +15,15 @@ class TempoGraph extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double sweepAngle = math.pi * 2/timeSig;
+    double sweepAngle = math.pi * 2/(timeSig == 0 ? 1 : timeSig);
     return Stack(
-      children: List.generate(timeSig, (i) {
+      children: List.generate(timeSig == 0 ? 1 : timeSig, (i) {
         double startAngle = sweepAngle * i - math.pi / 2;
-        Color color = i == 0 ? Colors.red : Colors.blue;
+        Color color = i == 0 && timeSig != 0 ? Colors.red : Colors.blue;
+
         bool show;
         if (beat == 0) show = false;
-        else show = (beat - 1) % timeSig == i;
+        else show = timeSig == 0 || timeSig == 1 || (beat - 1) % timeSig == i;
 
         return ConstrainedBox(
           constraints: BoxConstraints.expand(),

@@ -159,9 +159,12 @@ class _MetronomeState extends State<Metronome> {
     setState(() {
       beat += 1;
 
-      var i = (beat - 1) % timeSig;
-      
-      AudioPlayer player = players.get(i == 0 ? 0 : 1);
+      var i = 1;
+      if (timeSig == 1 || timeSig != 0 && (beat - 1) % timeSig == 0) {
+        i = 0;
+      }
+
+      AudioPlayer player = players.get(i);
       if (player == null) {
         // player is not ready
         return;

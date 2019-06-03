@@ -32,7 +32,7 @@ class TempoBottomSheetState extends State<TempoBottomSheet> {
   Widget build(BuildContext context) {
     var textStyle = TextStyle(
       color: Theme.of(context).primaryColor,
-      fontSize: 30.0
+      fontSize: 30.0,
     );
     return Container(
       height: 200.0,
@@ -53,18 +53,19 @@ class TempoBottomSheetState extends State<TempoBottomSheet> {
                     itemExtent: 36.0,
                     offAxisFraction: -0.4,
                     scrollController: FixedExtentScrollController(
-                      initialItem: widget.timeSig - 1
+                      initialItem: widget.timeSig,
                     ),
-                    children: List.generate(16, (i) {
+                    children: List.generate(17, (i) {
+                      var label = i.toString();
                       return Container(
                         padding: EdgeInsets.only(right: 20.0),
                         alignment: Alignment.centerRight,
-                        child: Text('${i + 1}', style: textStyle)
+                        child: Text(label, style: textStyle),
                       );
                     }),
                     onSelectedItemChanged: (i) {
                       setState(() {
-                        timeSig = i + 1;
+                        timeSig = i;
                       });
                     }
                   ),
@@ -81,7 +82,9 @@ class TempoBottomSheetState extends State<TempoBottomSheet> {
                       return Container(
                         padding: EdgeInsets.only(left: 20.0),
                         alignment: Alignment.centerLeft,
-                        child: Text('${i + 1}', style: textStyle)
+                        child: Text(
+                            '${i + 1}', style: textStyle
+                        )
                       );
                     }),
                     onSelectedItemChanged: (i) {

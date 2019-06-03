@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:screen/screen.dart';
@@ -12,7 +11,6 @@ import 'theme.dart';
 import 'dart:async';
 import 'model.dart';
 import 'intl.dart';
-import 'package:flutter/foundation.dart' show debugDefaultTargetPlatformOverride;
 
 void main() async {
 
