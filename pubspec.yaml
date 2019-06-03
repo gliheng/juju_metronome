@@ -1,0 +1,42 @@
+name: juju_metronome
+description: Metronome by juju
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  intl: 0.15.7
+  intl_translation: 0.17.2
+  cupertino_icons: ^0.1.2
+  path_provider: ^0.4.1
+  audioplayers: ^0.7.4
+  flutter_launcher_icons: "^0.6.0"
+  shared_preferences: ^0.4.2
+  scoped_model: ^0.3.0
+  screen: ^0.0.4
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  test: ^1.5.1
+
+flutter:
+  uses-material-design: true
+
+  assets:
+   - assets/images/
+   - assets/icons/
+   - assets/fonts/
+   - assets/samples/
+
+  fonts:
+    - family: AppIcons
+      fonts:
+        - asset: assets/fonts/AppIcons.ttf
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/icons/appicon-512x512.png"
+  adaptive_icon_background: "#FFFAFAFA"

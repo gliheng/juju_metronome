@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="appName">Juju节拍器</string>
+    <string name="needPermission">调音需要录音权限。请确保应用获得录音权限。</string>
+</resources>

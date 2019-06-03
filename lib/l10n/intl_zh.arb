@@ -1,0 +1,38 @@
+{
+  "title": "Juju节拍器",
+  "@title": {
+    "description": "Title for the application",
+    "type": "text",
+    "placeholders": {}
+  },
+  "metronome": "节拍器",
+  "@metronome": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "tuner": "调音器",
+  "@tuner": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "tempoSettings": "节拍设置",
+  "@tempoSettings": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "startOrStop": "开始/停止",
+  "@startOrStop": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "soundSettings": "声音设置",
+  "@soundSettings": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "tempo": "节拍",
+  "@tempo": {
+    "type": "text",
+    "placeholders": {}
+  }
+}

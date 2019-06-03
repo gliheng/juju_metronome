@@ -1,0 +1,39 @@
+{
+  "@@last_modified": "2019-02-01T10:14:29.997543",
+  "title": "Hello World",
+  "@title": {
+    "description": "Title for the Demo application",
+    "type": "text",
+    "placeholders": {}
+  },
+  "metronome": "Metronome",
+  "@metronome": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "tuner": "Tuner",
+  "@tuner": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "tempoSettings": "Tempo Settings",
+  "@tempoSettings": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "startOrStop": "Start/Stop",
+  "@startOrStop": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "soundSettings": "Sound Settings",
+  "@soundSettings": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "tempo": "Tempo",
+  "@tempo": {
+    "type": "text",
+    "placeholders": {}
+  }
+}
