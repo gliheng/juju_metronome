@@ -11,6 +11,7 @@ import android.support.v4.content.ContextCompat;
 
 import io.flutter.app.FlutterActivity;
 import io.flutter.plugin.common.EventChannel;
+import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugins.GeneratedPluginRegistrant;
 
 
@@ -29,14 +30,15 @@ public class MainActivity extends FlutterActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+
     GeneratedPluginRegistrant.registerWith(this);
+    SoundPlayerPlugin.registerWith(registrarFor("one.juju.metronome.SoundPlayerPlugin"));
 
     dispatcher = new LineInAudioDispatcher(this);
     pitchStreamHandler = new PitchStreamHandler(this, dispatcher);
     oscilloscopeStreamHandler = new OscilloscopeStreamHandler(this, dispatcher);
     new EventChannel(getFlutterView(), PITCH_DETECT_CHANNEL).setStreamHandler(pitchStreamHandler);
     new EventChannel(getFlutterView(), OSCILLOSCOPE_CHANNEL).setStreamHandler(oscilloscopeStreamHandler);
-    // dispatcher.startAudioThread();
   }
 
   @Override

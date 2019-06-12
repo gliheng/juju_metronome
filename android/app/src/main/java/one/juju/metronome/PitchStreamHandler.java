@@ -32,11 +32,11 @@ public class PitchStreamHandler implements EventChannel.StreamHandler, StreamPro
       activity.runOnUiThread(new Runnable() {
         @Override
         public void run() {
-        // eventSink.error("UNAVAILABLE", "Charging status unavailable", null);
-        // eventSink.success("charging");
-        if (sink != null) {
-          sink.success(data);
-        }
+          // eventSink.error("UNAVAILABLE", "Charging status unavailable", null);
+          // eventSink.success("charging");
+          if (sink != null) {
+            sink.success(data);
+          }
         }
       });
       }

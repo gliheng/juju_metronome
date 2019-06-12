@@ -1,14 +1,12 @@
 import 'dart:async';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
-import 'package:audioplayers/audioplayers.dart';
 import 'package:path/path.dart' as path;
 import 'package:scoped_model/scoped_model.dart';
 import 'app_icons.dart';
-import 'asset_cache.dart';
 import 'radial_slider.dart';
 import 'tempo_graph.dart';
-import 'audio_players.dart';
+import 'audio_player.dart';
 import 'tempo_bottom_sheet.dart';
 import 'intl.dart';
 import 'model.dart';
@@ -52,10 +50,7 @@ class _MetronomeState extends State<Metronome> {
 
   GlobalKey tempoBottomSheetKey = GlobalKey(debugLabel: 'TempoBottomSheetKey');
 
-  // move files from assets to doc
-  AssetCache assetCache = AssetCache();
-
-  AudioPlayerPool players = new AudioPlayerPool();
+  AudioPlayer player = new AudioPlayer();
   Timer timer;
 
   /// how long a tick takes in millisecs
@@ -80,7 +75,7 @@ class _MetronomeState extends State<Metronome> {
 
   @override
   void dispose() {
-    players.dispose();
+    player.unload();
     super.dispose();
   }
 
@@ -130,7 +125,7 @@ class _MetronomeState extends State<Metronome> {
 
     // if it is stopped, play a beat to get a preview of the sample
     if (playerState == MetronomeState.STOPPED) {
-      players.get(0).resume();
+      player.play(0);
     }
   }
 
@@ -144,15 +139,8 @@ class _MetronomeState extends State<Metronome> {
       path.join(SAMPLE_DIR, fx['high']),
       path.join(SAMPLE_DIR, fx['low']),
     ];
-    var f = await assetCache.prepareAssets(files);
-    
-    players
-      ..setConfig((i, player) {
-        player.setReleaseMode(ReleaseMode.STOP);
-        // index 0 is high sound, index 1 is low sound
-        player.setUrl(i == 0 ? f[0] : f[1], isLocal: true);
-      })
-      ..make(2);
+    // var f = await assetCache.prepareAssets(files);
+    player.load(files);
   }
 
   void _onTick() {
@@ -164,13 +152,7 @@ class _MetronomeState extends State<Metronome> {
         i = 0;
       }
 
-      AudioPlayer player = players.get(i);
-      if (player == null) {
-        // player is not ready
-        return;
-      }
-      player.seek(Duration(seconds: 0));
-      player.resume();
+      player.play(i);
     });
 
     timer = Timer(Duration(milliseconds: beatTime), _onTick);
