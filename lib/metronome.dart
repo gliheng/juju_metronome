@@ -29,7 +29,8 @@ enum MetronomeState {
 }
 
 class Metronome extends StatefulWidget {
-  Metronome();
+  final MetronomeSettings settings;
+  Metronome(MetronomeSettings settings): settings = settings;
 
   @override
   _MetronomeState createState() => _MetronomeState();
@@ -38,13 +39,6 @@ class Metronome extends StatefulWidget {
 class _MetronomeState extends State<Metronome> {
   MetronomeState playerState = MetronomeState.STOPPED;
 
-  // time signature
-  int timeSig = 4;
-  int timeSigBase = 4;
-  // sound effect index
-  int soundEffectIdx = 0;
-  // in bpm unit
-  int tempo = 90;
   // current beat
   int beat = 0;
 
@@ -55,10 +49,13 @@ class _MetronomeState extends State<Metronome> {
 
   /// how long a tick takes in millisecs
   int get beatTime {
-    return  (60 * 1000 / tempo * 4 / timeSigBase).floor();
+    var settings = widget.settings;
+    return  (60 * 1000 / settings.tempo * 4 / settings.timeSigBase).floor();
   }
 
   String get _tempoLabel {
+    var tempo = widget.settings.tempo;
+
     if (tempo < 40) return 'Grave';
     if (tempo < 60) return 'Largo';
     if (tempo < 76) return 'Adagio';
@@ -117,10 +114,11 @@ class _MetronomeState extends State<Metronome> {
     });
   }
 
-  void _switchSoundEffect() async {
-    setState(() {
-      soundEffectIdx = (soundEffectIdx + 1) % PRESET_SOUNDS.length;
-    });
+  void _switchSoundEffect(AppModel model) async {
+    var soundEffectIdx = widget.settings.soundEffectIdx;
+    soundEffectIdx = (soundEffectIdx + 1) % PRESET_SOUNDS.length;
+
+    await model.setMetronomeSettings(widget.settings.updateSoundEffectIdx(soundEffectIdx));
     await _prepareResource();
 
     // if it is stopped, play a beat to get a preview of the sample
@@ -130,6 +128,7 @@ class _MetronomeState extends State<Metronome> {
   }
 
   Map<String, String> get currentSoundEffect {
+    var soundEffectIdx = widget.settings.soundEffectIdx;
     return PRESET_SOUNDS[soundEffectIdx];
   }
   /// put assets from bundle under documents directory, so that audioplayer can read it
@@ -140,12 +139,13 @@ class _MetronomeState extends State<Metronome> {
       path.join(SAMPLE_DIR, fx['low']),
     ];
     // var f = await assetCache.prepareAssets(files);
-    player.load(files);
+    await player.load(files);
   }
 
   void _onTick() {
     setState(() {
       beat += 1;
+      int timeSig = widget.settings.timeSig;
 
       var i = 1;
       if (timeSig == 1 || timeSig != 0 && (beat - 1) % timeSig == 0) {
@@ -158,10 +158,9 @@ class _MetronomeState extends State<Metronome> {
     timer = Timer(Duration(milliseconds: beatTime), _onTick);
   }
 
-  void _onSetTempo(double v) {
-    setState(() {
-      tempo = _angle2Tempo(v);
-    });
+  void _onSetTempo(AppModel model, double v) {
+    var tempo = _angle2Tempo(v);
+    model.setMetronomeSettings(widget.settings.updateTempo(tempo));
   }
 
   int _angle2Tempo(double v) {
@@ -172,48 +171,54 @@ class _MetronomeState extends State<Metronome> {
     return (v - MIN_TEMPO) * (MAX_ANGLE - MIN_ANGLE) / (MAX_TEMPO - MIN_TEMPO) + MIN_ANGLE;
   }
  
-  _configTempo() async {
+  _configTempo(AppModel model) async {
     await showModalBottomSheet<List<int>>(
       context: context, builder: _buildTempoSettings
     );
 
-    // I get the state from bottomsheet using GlobalKey, can I use Navigator?
-    setState(() {
-      TempoBottomSheetState sheetState = tempoBottomSheetKey.currentState;
-      timeSig = sheetState.timeSig;
-      timeSigBase = sheetState.timeSigBase;
-    });
+    TempoBottomSheetState sheetState = tempoBottomSheetKey.currentState;
+    model.setMetronomeSettings(widget.settings.updateTimeSig(
+      sheetState.timeSig, sheetState.timeSigBase,
+    ));
   }
 
   Widget _buildTempoSettings(BuildContext context) {
+    var settings = widget.settings;
     return TempoBottomSheet(
       key: tempoBottomSheetKey,
-      timeSig: timeSig, timeSigBase: timeSigBase,
-      onConfig: (int _timeSig, int _timeSigBase) {
-        setState(() {
-          timeSig = _timeSig;
-          timeSigBase = _timeSigBase;
-        });
-      }
+      timeSig: settings.timeSig,
+      timeSigBase: settings.timeSigBase,
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return ScopedModelDescendant<AppModel>(
-      builder: (context, child, model) {
+      builder: (context, child, model)
+      {
         ThemeData theme = model.theme;
 
         List<Color> colors;
         List<double> stops;
         if (theme.brightness == Brightness.dark) {
-          colors = <Color>[Colors.transparent, Colors.white10, Colors.white30, Colors.white70];
+          colors = <Color>[
+            Colors.transparent,
+            Colors.white10,
+            Colors.white30,
+            Colors.white70
+          ];
           stops = [0.5, 0.8, 0.93, 1.0];
         } else {
-          colors = <Color>[Colors.transparent, Colors.black12, Colors.black26, Colors.black38];
+          colors = <Color>[
+            Colors.transparent,
+            Colors.black12,
+            Colors.black26,
+            Colors.black38
+          ];
           stops = [0.5, 0.8, 0.93, 1.0];
         }
 
+        var settings = widget.settings;
         return Material(
           color: Colors.transparent,
           child: Column(
@@ -230,11 +235,11 @@ class _MetronomeState extends State<Metronome> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: <Widget>[
                               Icon(Icons.music_note, size: 14.0,),
-                              Text('$timeSig/$timeSigBase'),
+                              Text('${settings.timeSig}/${settings.timeSigBase}'),
                             ],
                           ),
                         ),
-                        Text(tempo.toString(), style: TextStyle(fontSize: 50.0)),
+                        Text(settings.tempo.toString(), style: TextStyle(fontSize: 50.0)),
                         Text(_tempoLabel.toString()),
                         Padding(
                           padding: const EdgeInsets.all(8.0),
@@ -242,7 +247,7 @@ class _MetronomeState extends State<Metronome> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: <Widget>[
                               Icon(Icons.volume_up, size: 14.0,),
-                              Text('${soundEffectIdx + 1}'),
+                              Text('${settings.soundEffectIdx + 1}'),
                             ],
                           ),
                         ),
@@ -251,13 +256,16 @@ class _MetronomeState extends State<Metronome> {
                     Container(
                       child: Stack(
                           children: <Widget>[
-                            TempoGraph(beat: beat, timeSig: timeSig, beatTime: beatTime),
+                            TempoGraph(
+                                beat: beat, timeSig: settings.timeSig, beatTime: beatTime),
                             RadialSlider(
                               color: theme.accentColor,
                               minAngle: MIN_ANGLE,
                               maxAngle: MAX_ANGLE,
-                              initialAngle: _tempo2Angle(tempo),
-                              onChanging: _onSetTempo,
+                              initialAngle: _tempo2Angle(settings.tempo),
+                              onChanging: (v) {
+                                _onSetTempo(model, v);
+                              },
                               backgroundGradient: RadialGradient(
                                 colors: colors,
                                 stops: stops,
@@ -273,8 +281,12 @@ class _MetronomeState extends State<Metronome> {
               PlayerControl(
                 playerState: playerState,
                 play: _play,
-                configSoundEffect: _switchSoundEffect,
-                configTempo: _configTempo,
+                configSoundEffect: () {
+                  _switchSoundEffect(model);
+                },
+                configTempo: () {
+                  _configTempo(model);
+                },
               ),
             ],
           ),

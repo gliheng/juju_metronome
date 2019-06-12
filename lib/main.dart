@@ -197,7 +197,7 @@ class _AppContainerState extends State<AppContainer> with SingleTickerProviderSt
           );
         }
 
-        var app = model.appMode == AppMode.METRONOME ? Metronome() : Tuner(tunerSettings: model.tunerSettings);
+        var app = model.appMode == AppMode.METRONOME ? Metronome(model.metronomeSettings) : Tuner(settings: model.tunerSettings);
         return Stack(
             key: key,
             fit: StackFit.expand,

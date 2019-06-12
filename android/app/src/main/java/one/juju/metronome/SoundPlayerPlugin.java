@@ -8,6 +8,7 @@ import android.media.SoundPool;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 import io.flutter.plugin.common.MethodCall;
@@ -31,27 +32,44 @@ class SoundPlayerPlugin implements MethodChannel.MethodCallHandler {
     private SoundPool pool;
     private List<Integer> sounds;
     private List<AssetFileDescriptor> fds;
+    private HashSet<Integer> loaded;
 
     @Override
     public void onMethodCall(MethodCall methodCall, MethodChannel.Result result) {
         if (methodCall.method.equals("load")) {
-            load((ArrayList<String>)methodCall.arguments);
+            load((ArrayList<String>)methodCall.arguments, result);
         } else if (methodCall.method.equals("play")) {
             play((Integer)methodCall.arguments);
+            result.success(null);
         } else if (methodCall.method.equals("unload")) {
             unload();
+            result.success(null);
         } else {
             result.notImplemented();
         }
     }
 
-    void load(List<String> files) {
+    void load(List<String> files, MethodChannel.Result result) {
         if (pool != null) {
             pool.release();
         }
 
         AssetManager assetManager = registrar.context().getAssets();
         pool = new SoundPool(10, AudioManager.STREAM_MUSIC, 100);
+        pool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
+            @Override
+            public void onLoadComplete(SoundPool soundPool, int sampleId, int status) {
+                if (status == 0) {
+                    loaded.add(sampleId);
+                    if (loaded.size() == files.size()) {
+                        // this notify flutter of complete loading
+                        result.success(null);
+                    }
+                } else {
+                    result.error("-1", String.format("soundpool sample load error: %d", sampleId), null);
+                }
+            }
+        });
         sounds = new ArrayList<Integer>() {
             {
                 for (int i = 0; i < files.size(); i++) {
@@ -66,6 +84,7 @@ class SoundPlayerPlugin implements MethodChannel.MethodCallHandler {
                 }
             }
         };
+        loaded = new HashSet<>();
 
 
         for (int i = 0; i < files.size(); i++) {

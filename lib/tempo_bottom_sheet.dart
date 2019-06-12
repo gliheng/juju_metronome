@@ -7,10 +7,9 @@ typedef ConfigCallback = void Function(int timeSig, int timeSigBase);
 class TempoBottomSheet extends StatefulWidget {
   final int timeSig;
   final int timeSigBase;
-  final ConfigCallback onConfig;
   final Key key;
 
-  TempoBottomSheet({this.key, this.timeSig, this.timeSigBase, this.onConfig})
+  TempoBottomSheet({this.key, this.timeSig, this.timeSigBase})
     : super(key: key);
 
   @override

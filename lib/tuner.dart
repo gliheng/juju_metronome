@@ -8,9 +8,9 @@ import 'pitch.dart';
 import 'model.dart';
 
 class Tuner extends StatefulWidget {
-  final TunerSettings tunerSettings;
+  final TunerSettings settings;
 
-  Tuner({this.tunerSettings});
+  Tuner({this.settings});
 
   @override
   _TunerState createState() => _TunerState();
@@ -39,8 +39,8 @@ class _TunerState extends State<Tuner> {
     if (probability > 0.5) {
       var ret = PitchFind.getNearestPitchWithTemperament(
           frequency,
-          widget.tunerSettings.concertPitch,
-          widget.tunerSettings.temperament
+          widget.settings.concertPitch,
+          widget.settings.temperament
       );
       if (ret == null) return;
 
@@ -60,7 +60,7 @@ class _TunerState extends State<Tuner> {
     TunerSettings v = await Navigator.push(context, MaterialPageRoute(
       fullscreenDialog: true,
       builder: (BuildContext context) {
-        return TunerSettingsDialog(settings: widget.tunerSettings);
+        return TunerSettingsDialog(settings: widget.settings);
       }
     ));
 
@@ -96,7 +96,7 @@ class _TunerState extends State<Tuner> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   FlatButton(
-                    child: Text(temperamentLabel(widget.tunerSettings.temperament)),
+                    child: Text(temperamentLabel(widget.settings.temperament)),
                     color: Colors.black.withOpacity(0.1),
                     onPressed: () {
                       showTunerSettings(context, model);
@@ -104,7 +104,7 @@ class _TunerState extends State<Tuner> {
                   ),
                   Container(width: 10.0, height: 0.0),
                   FlatButton(
-                    child: Text('A4 = ${widget.tunerSettings.concertPitch}Hz'),
+                    child: Text('A4 = ${widget.settings.concertPitch}Hz'),
                     color: Colors.black.withOpacity(0.1),
                     onPressed: () {
                       showTunerSettings(context, model);

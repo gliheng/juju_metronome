@@ -16,9 +16,11 @@ class AppModel extends Model {
   int currentTheme;
 
   TunerSettings tunerSettings;
+  MetronomeSettings metronomeSettings;
 
   AppModel({this.prefs})
       : currentTheme = prefs.getInt('themeId') ?? 0,
+        metronomeSettings = MetronomeSettings.fromPrefs(prefs),
         tunerSettings = TunerSettings.fromPrefs(prefs);
 
   ThemeData get theme {
@@ -36,10 +38,74 @@ class AppModel extends Model {
     return await prefs.setInt('themeId', i);
   }
 
+  Future<bool> setMetronomeSettings(MetronomeSettings v) async {
+    metronomeSettings = v;
+    notifyListeners();
+    return await v.toPrefs(prefs);
+  }
+
   Future<bool> setTunerSettings(TunerSettings v) async {
     tunerSettings = v;
     notifyListeners();
     return await v.toPrefs(prefs);
+  }
+}
+
+class MetronomeSettings {
+  // time signature
+  int timeSig = 4;
+  int timeSigBase = 4;
+  // sound effect index
+  int soundEffectIdx = 0;
+  // in bpm unit
+  int tempo = 90;
+
+  MetronomeSettings({this.timeSig, this.timeSigBase, this.soundEffectIdx, this.tempo});
+
+  MetronomeSettings updateTimeSig(int timeSig, int timeSigBase) {
+    return MetronomeSettings(
+      timeSig: timeSig,
+      timeSigBase: timeSigBase,
+      soundEffectIdx: soundEffectIdx,
+      tempo: tempo,
+    );
+  }
+
+  MetronomeSettings updateSoundEffectIdx(int soundEffectIdx) {
+    return MetronomeSettings(
+      timeSig: timeSig,
+      timeSigBase: timeSigBase,
+      soundEffectIdx: soundEffectIdx,
+      tempo: tempo,
+    );
+  }
+
+  MetronomeSettings updateTempo(int tempo) {
+    return MetronomeSettings(
+      timeSig: timeSig,
+      timeSigBase: timeSigBase,
+      soundEffectIdx: soundEffectIdx,
+      tempo: tempo,
+    );
+  }
+
+  factory MetronomeSettings.fromPrefs(SharedPreferences prefs) {
+    var timeSig = prefs.getInt('timeSig') ?? 4;
+    var timeSigBase = prefs.getInt('timeSigBase') ?? 4;
+    var soundEffectIdx = prefs.getInt('soundEffectIdx') ?? 0;
+    var tempo = prefs.getInt('tempo') ?? 90;
+    return MetronomeSettings(
+        timeSig: timeSig, timeSigBase: timeSigBase,
+        soundEffectIdx: soundEffectIdx, tempo: tempo
+    );
+  }
+
+  Future<bool> toPrefs(SharedPreferences prefs) async {
+    var ret1 = await prefs.setInt('timeSig', timeSig ?? 4);
+    var ret2 = await prefs.setInt('timeSigBase', timeSigBase ?? 4);
+    var ret3 = await prefs.setInt('soundEffectIdx', timeSigBase ?? 0);
+    var ret4 = await prefs.setInt('tempo', timeSigBase ?? 90);
+    return Future.value(ret1 && ret2 && ret3 && ret4);
   }
 }
 
