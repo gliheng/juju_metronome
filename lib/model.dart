@@ -96,15 +96,15 @@ class MetronomeSettings {
     var tempo = prefs.getInt('tempo') ?? 90;
     return MetronomeSettings(
         timeSig: timeSig, timeSigBase: timeSigBase,
-        soundEffectIdx: soundEffectIdx, tempo: tempo
+        soundEffectIdx: soundEffectIdx, tempo: tempo,
     );
   }
 
   Future<bool> toPrefs(SharedPreferences prefs) async {
     var ret1 = await prefs.setInt('timeSig', timeSig ?? 4);
     var ret2 = await prefs.setInt('timeSigBase', timeSigBase ?? 4);
-    var ret3 = await prefs.setInt('soundEffectIdx', timeSigBase ?? 0);
-    var ret4 = await prefs.setInt('tempo', timeSigBase ?? 90);
+    var ret3 = await prefs.setInt('soundEffectIdx', soundEffectIdx ?? 0);
+    var ret4 = await prefs.setInt('tempo', tempo ?? 90);
     return Future.value(ret1 && ret2 && ret3 && ret4);
   }
 }

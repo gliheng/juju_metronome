@@ -80,7 +80,7 @@ class _MetronomeState extends State<Metronome> {
     if (playerState == MetronomeState.PLAYING) {
       _stop();
     } else {
-      await _prepareResource();
+      await _prepareResource(widget.settings.soundEffectIdx);
       _start();
     }
 
@@ -119,7 +119,7 @@ class _MetronomeState extends State<Metronome> {
     soundEffectIdx = (soundEffectIdx + 1) % PRESET_SOUNDS.length;
 
     await model.setMetronomeSettings(widget.settings.updateSoundEffectIdx(soundEffectIdx));
-    await _prepareResource();
+    await _prepareResource(soundEffectIdx);
 
     // if it is stopped, play a beat to get a preview of the sample
     if (playerState == MetronomeState.STOPPED) {
@@ -128,12 +128,11 @@ class _MetronomeState extends State<Metronome> {
   }
 
   Map<String, String> get currentSoundEffect {
-    var soundEffectIdx = widget.settings.soundEffectIdx;
-    return PRESET_SOUNDS[soundEffectIdx];
+
   }
   /// put assets from bundle under documents directory, so that audioplayer can read it
-  Future<void> _prepareResource() async {
-    var fx = currentSoundEffect;
+  Future<void> _prepareResource(int soundEffectIdx) async {
+    var fx = PRESET_SOUNDS[soundEffectIdx];
     var files = [
       path.join(SAMPLE_DIR, fx['high']),
       path.join(SAMPLE_DIR, fx['low']),
